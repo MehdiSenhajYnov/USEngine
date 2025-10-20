@@ -21,6 +21,12 @@ namespace vde::core::assets
 		{
 		}
 
+		void Reset()
+		{
+			m_source.reset();
+			m_value.reset();
+		}
+
 		template<typename... ARGS>
 		explicit Asset(std::unique_ptr<AssetSource> src, ARGS... args)
 			: m_source(std::move(src))
@@ -31,6 +37,7 @@ namespace vde::core::assets
 		Asset& operator=(std::unique_ptr<AssetSource>&& src)
 		{
 			m_source = std::move(src);
+			return *this;
 		}
 
 		template<typename... ARGS>
