@@ -256,7 +256,9 @@ void m_PipelineBasedCommandEncoder::BindDescriptorSets(size_t firstSet, const st
 		? VK_PIPELINE_BIND_POINT_GRAPHICS
 		: VK_PIPELINE_BIND_POINT_COMPUTE;
 
-	auto setHandles = sets | std::ranges::views::transform([](DescriptorSet* ds) { return ds->GetImpl().descriptorSet; }) | std::ranges::to<std::vector>();
+	auto setHandles = sets
+		| std::ranges::views::transform([](DescriptorSet* ds) { return ds->GetImpl().descriptorSet; })
+		| std::ranges::to<std::vector>();
 	vkCmdBindDescriptorSets(m_owner->GetImpl().cmd, bindPoint, m_pipeline->GetImpl().layout, uint32_t(firstSet), uint32_t(setHandles.size()), setHandles.data(), 0, nullptr);
 }
 

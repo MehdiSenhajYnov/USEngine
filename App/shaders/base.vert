@@ -12,8 +12,13 @@ layout(push_constant) uniform constants
 	mat4 projection;
 } PushConstants;
 
+layout(set = 0, binding = 0) uniform ModelMatrix
+{
+	mat4 matrix;
+} model;
+
 void main()
 {
-	gl_Position = PushConstants.projection * PushConstants.view * vec4(iPosition, 1.0f);
+	gl_Position = PushConstants.projection * PushConstants.view * model.matrix * vec4(iPosition, 1.0f);
 	vTexCoord = iTexCoord;
 }
