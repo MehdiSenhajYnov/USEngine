@@ -27,5 +27,6 @@ T& USGameObject::AddComponent()
 }
 
 
-// Affichage mesh
 // Transform component
+// camera bouger / rotate
+// Affichage mesh
