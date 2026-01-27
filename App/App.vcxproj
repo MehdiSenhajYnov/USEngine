@@ -153,6 +153,7 @@
     <ClCompile Include="Core\List.cpp" />
     <ClCompile Include="Core\Managers\AssetsManager.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
+    <ClCompile Include="OptRef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\AllConcepts.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Core\List.h" />
     <ClInclude Include="Core\Managers\AssetsManager.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
+    <ClInclude Include="OptRef.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

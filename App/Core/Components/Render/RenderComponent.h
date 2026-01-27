@@ -10,6 +10,8 @@
 #include "Renderable.h"
 #include "../Component.h"
 
+class USGameObject;
+
 namespace vde::core::gpu { class RenderingCommandEncoder; }
 
 class USRenderComponent : public USComponent
@@ -39,8 +41,7 @@ public:
 	std::unique_ptr<vde::core::gpu::DescriptorSet> DescriptorSetModel; // Set 0 : matrice
 
 	void Load(vde::core::gpu::Pipeline* Pipeline, vde::core::GraphicsContext* GraphicsContext);
-	void Translate(glm::vec3 ToTranslate);
 
-private:
+protected:
 	bool AlreadyReset = false;
 };

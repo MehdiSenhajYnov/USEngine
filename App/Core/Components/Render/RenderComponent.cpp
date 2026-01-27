@@ -4,6 +4,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <core/gpu/commandbuffer.h>
 
+#include "../TransformComponent.h"
+#include "../../GameObjects/GameObject.h"
 #include "../../Managers/AssetsManager.h"
 
 
@@ -76,10 +78,10 @@ void USRenderComponent::Load(vde::core::gpu::Pipeline* Pipeline, vde::core::Grap
 	DescriptorSetModel->Bind(0, *ModelBuffer); // Binding 0 = uniform buffer
 }
 
-void USRenderComponent::Translate(glm::vec3 ToTranslate)
-{
-	ModelStore["matrix"] = glm::translate(glm::mat4(1.0f), ToTranslate);
-}
+//void USRenderComponent::Translate(glm::vec3 ToTranslate)
+//{
+//	ModelStore["matrix"] = glm::translate(glm::mat4(1.0f), ToTranslate);
+//}
 
 void USRenderComponent::Reset()
 {
@@ -106,6 +108,7 @@ void USRenderComponent::Tick(float deltaTime)
 
 void USRenderComponent::Draw(vde::core::gpu::RenderingCommandEncoder& Rendering)
 {
+	ModelStore["matrix"] = Owner->Transform->GetWorldTransform();
 	// Upload de la matrice vers le buffer GPU
 	ModelBuffer->Upload(ModelStore);
 

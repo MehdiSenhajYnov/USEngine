@@ -4,8 +4,8 @@
 class USRenderComponent;
 
 // GameObject avec un RenderComponent créé automatiquement
-class RendererObject : public USGameObject {
+class USRendererObject : public USGameObject {
 public:
-	RendererObject();
+	USRendererObject();
 	USRenderComponent* RenderComponent;
 };

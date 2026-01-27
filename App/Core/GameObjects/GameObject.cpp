@@ -1,8 +1,14 @@
 ﻿#include "GameObject.h"
 
 #include "../Components/Component.h"
+#include "../Components/TransformComponent.h"
 #include "core/gpu/buffer.h"
 
+
+USGameObject::USGameObject() : USBaseObject()
+{
+	Transform = &AddComponent<USTransformComponent>();
+}
 
 void USGameObject::Tick(float deltaTime)
 {
@@ -27,4 +33,6 @@ void USGameObject::Reset()
 	{
 		component->Reset();
 	}
+
 }
+

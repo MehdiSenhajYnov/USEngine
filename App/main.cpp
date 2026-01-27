@@ -15,6 +15,7 @@
 #include <core/assets/asset.h>
 #include <imgui/imgui_vde.h>
 
+#include "OptRef.h"
 #include "Core/Components/Render/RenderComponent.h"
 #include "Core/GameObjects/RendererObject.h"
 #include "Core/Managers/AssetsManager.h"
@@ -96,6 +97,8 @@ int main(int argc, char** argv)
 		{ &graphicsContext->Backbuffer() }
 	});
 
+	OptRef<USGameObject> temp;
+
 	// === SCENE ===
 	// Disposition des 4 quads en croix :
 	//              [GO1]           (y = +1)
@@ -104,20 +107,20 @@ int main(int argc, char** argv)
 	//                |
 	//              [GO4]           (y = -1)
 	USScene Scene;
-	RendererObject* GameObject1 = Scene.CreateGameObject<RendererObject>();
-	RendererObject* GameObject2 = Scene.CreateGameObject<RendererObject>();
-	RendererObject* GameObject3 = Scene.CreateGameObject<RendererObject>();
-	RendererObject* GameObject4 = Scene.CreateGameObject<RendererObject>();
+	USRendererObject* GameObject1 = Scene.CreateGameObject<USRendererObject>();
+	USRendererObject* GameObject2 = Scene.CreateGameObject<USRendererObject>();
+	USRendererObject* GameObject3 = Scene.CreateGameObject<USRendererObject>();
+	USRendererObject* GameObject4 = Scene.CreateGameObject<USRendererObject>();
 
 	GameObject1->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject2->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject3->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject4->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 
-	GameObject1->RenderComponent->Translate({0.0f, 1.0f, 0.0f});
-	GameObject2->RenderComponent->Translate({-1.0f, 0.0f, 0.0f});
-	GameObject3->RenderComponent->Translate({1.0f, 0.0f, 0.0f});
-	GameObject4->RenderComponent->Translate({0.0f, -1.0f, 0.0f});
+	//GameObject1->Translate({0.0f, 1.0f, 0.0f});
+	//GameObject2->Translate({-1.0f, 0.0f, 0.0f});
+	//GameObject3->Translate({1.0f, 0.0f, 0.0f});
+	//GameObject4->Translate({0.0f, -1.0f, 0.0f});
 
 	// === CAMERA ===
 	// Push constants = données rapides envoyées au shader (view/projection partagées)

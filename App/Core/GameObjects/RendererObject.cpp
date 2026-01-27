@@ -3,7 +3,7 @@
 #include "../Components/Render/RenderComponent.h"
 
 
-RendererObject::RendererObject() : USGameObject()
+USRendererObject::USRendererObject() : USGameObject()
 {
 	RenderComponent = &AddComponent<USRenderComponent>();
 }
