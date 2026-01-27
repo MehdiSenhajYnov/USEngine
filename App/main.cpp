@@ -32,7 +32,11 @@
 
 // Interface utilisateur ImGui
 #include <imgui/imgui_vde.h>
-#include "../RenderObject.h"
+
+#include "Core/Components/Render/RenderComponent.h" 
+#include "Core/GameObjects/RendererObject.h"
+#include "Core/Managers/AssetsManager.h"
+#include "Core/Scene/Scene.h"
 
 // ============================================================================
 // Données de géométrie : Quad (carré) texturé
@@ -129,19 +133,9 @@ int main(int argc, char** argv)
 	);
 	ib->Upload(indices); // Upload des indices vers GPU
 
-	// ====================================================================
-	// Chargement des textures
-	// ====================================================================
-
-	RenderObject RenderObject1(graphicsContext.get());
-	RenderObject1.LoadTexture("assets/AllMight.jpg");
-
-	RenderObject RenderObject2(graphicsContext.get());
-	RenderObject2.LoadTexture("assets/AllMight.jpg");
-
-	RenderObject RenderObject3(graphicsContext.get());
-	RenderObject3.LoadTexture("assets/AllMight.jpg");
-
+	AssetsManager::GetInstance().LoadRenderable("Quad", {vb.get(), uvb.get()}, ib.get(), 6);
+	AssetsManager::GetInstance().LoadTexture("AllMight", "assets/AllMight.jpg");
+	
 	// ------------------------------------------------------------------------
 	// PHASE 3 : Chargement et compilation des shaders
 	// ------------------------------------------------------------------------
@@ -167,14 +161,27 @@ int main(int argc, char** argv)
 		{ &graphicsContext->Backbuffer() }     // Cible de rendu (écran)
 		});
 
-	RenderObject1.Load(pipeline.get());
-	RenderObject2.Load(pipeline.get());
-	RenderObject3.Load(pipeline.get());
+	
+	USScene Scene;
+	RendererObject* GameObject1 = Scene.CreateGameObject<RendererObject>();
+	RendererObject* GameObject2 = Scene.CreateGameObject<RendererObject>();
+	RendererObject* GameObject3 = Scene.CreateGameObject<RendererObject>();
+	RendererObject* GameObject4 = Scene.CreateGameObject<RendererObject>();
+	
+	// ====================================================================
+	// Chargement des textures
+	// ====================================================================
 
-	RenderObject1.Translate({0.0f, 1.0f, 0.0f});
-	RenderObject2.Translate({-1.0f, 0.0f, 0.0f});
-	RenderObject3.Translate({1.0f, 0.0f, 0.0f});
+	GameObject1->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
+	GameObject2->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
+	GameObject3->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
+	GameObject4->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 
+	GameObject1->RenderComponent->Translate({0.0f, 1.0f, 0.0f});
+	GameObject2->RenderComponent->Translate({-1.0f, 0.0f, 0.0f});
+	GameObject3->RenderComponent->Translate({1.0f, 0.0f, 0.0f});
+	GameObject4->RenderComponent->Translate({0.0f, -1.0f, 0.0f});
+	
 	// ------------------------------------------------------------------------
 	// PHASE 5 : Configuration des matrices de transformation
 	// ------------------------------------------------------------------------
@@ -264,12 +271,10 @@ int main(int argc, char** argv)
 					{ graphicsContext->Backbuffer().Size() }   // Taille (plein écran)
 				);
 
-
-				RenderObject2.Draw(rendering.get(), vb.get(), uvb.get(), ib.get());
-				RenderObject3.Draw(rendering.get(), vb.get(), uvb.get(), ib.get());
-				RenderObject1.Draw(rendering.get(), vb.get(), uvb.get(), ib.get());
-
-
+				// TODO a changer 1/60 avec le vrai delta time
+				Scene.Tick(1/60);
+				Scene.Draw(*rendering);
+				
 				// ================================================================
 				// Note importante : Instancing vs Multiple Draw Calls
 				// ================================================================
@@ -314,10 +319,8 @@ int main(int argc, char** argv)
 	// est terminé avant de détruire les ressources.
 	graphicsContext->WaitForIdle();
 
-	RenderObject1.Reset();
-	RenderObject2.Reset();
-	RenderObject3.Reset();
-
+	Scene.Reset();
+	AssetsManager::GetInstance().Reset();
 	// --- Buffers de géométrie ---
 	ib.reset();   // Index buffer (indices des triangles)
 	uvb.reset();  // UV buffer (coordonnées de texture)

@@ -1,35 +1,32 @@
-﻿#include "RenderObject.h"
+﻿#include "RenderComponent.h"
 #include "core/graphicscontext.h"
 #include "core/gpu/descriptorpool.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <core/gpu/commandbuffer.h>
 
+#include "../../Managers/AssetsManager.h"
 
-RenderObject::RenderObject(vde::core::GraphicsContext* GraphicsContextToUse)
-{
-	GraphicsContext = GraphicsContextToUse;
 
-}
-
-RenderObject::~RenderObject()
+USRenderComponent::USRenderComponent() : USComponent(), ModelStore()
 {
 
 }
 
-void RenderObject::LoadTexture(std::string TexturePathToUse)
+USRenderComponent::~USRenderComponent()
 {
-	// Le système de plugins (FileFormat_stbimage) décode automatiquement le JPG
-	// et crée une image GPU utilisable pour le rendu
-	TexturePath = TexturePathToUse;
-	Texture = std::make_unique<vde::core::assets::Asset<vde::core::gpu::Image>>(
-		std::make_unique<vde::core::assets::FileAssetSource>(TexturePathToUse)
-	);
+	
 }
 
-void RenderObject::Load(vde::core::gpu::Pipeline* Pipeline)
+void USRenderComponent::Init(vde::core::GraphicsContext* GraphicsContextToUse, std::string DrawableNameToUse, std::string TextureNameToUse, vde::core::gpu::Pipeline* Pipeline)
 {
+	DrawableName = DrawableNameToUse;
+	TextureName = TextureNameToUse;
+	AssetsManager::GetInstance().GetTexture(TextureName, Texture);
+	Load(Pipeline, GraphicsContextToUse);
+}
 
-
+void USRenderComponent::Load(vde::core::gpu::Pipeline* Pipeline, vde::core::GraphicsContext* GraphicsContext)
+{
 	// ====================================================================
 	// Configuration des Descriptor Sets pour les TEXTURES
 	// ====================================================================
@@ -42,7 +39,7 @@ void RenderObject::Load(vde::core::gpu::Pipeline* Pipeline)
 	// - Set 1 : Textures (sampler2D)
 
 	// Récupération du layout pour les textures (Set 1)
-
+	
 	vde::core::gpu::DescriptorSetLayout& DescriptorSetLayout = Pipeline->GetDescriptorSetLayout(1);
 	DescriptorSet = GraphicsContext->DescriptorPool().Acquire(DescriptorSetLayout);
 	DescriptorSet->Bind(0, Texture->Value()); // Binding 0 = uniform sampler2D uTexture
@@ -79,14 +76,15 @@ void RenderObject::Load(vde::core::gpu::Pipeline* Pipeline)
 	DescriptorSetModel->Bind(0, *ModelBuffer); // Binding 0 = uniform buffer
 }
 
-void RenderObject::Translate(glm::vec3 ToTranslate)
+void USRenderComponent::Translate(glm::vec3 ToTranslate)
 {
 	ModelStore["matrix"] = glm::translate(glm::mat4(1.0f), ToTranslate);
 }
 
-void RenderObject::Reset()
+void USRenderComponent::Reset()
 {
-
+	if (AlreadyReset) return;
+	AlreadyReset = true;
 	// ====================================================================
 	// Destruction dans l'ORDRE INVERSE de la création
 	// ====================================================================
@@ -99,12 +97,14 @@ void RenderObject::Reset()
 	// Doivent être détruits avant les ressources qu'ils référencent
 	DescriptorSet.reset();
 	DescriptorSetModel.reset();
-
-	// Les assets de texture peuvent que apres Reset()
-	Texture.reset();
 }
 
-void RenderObject::Draw(vde::core::gpu::RenderingCommandEncoder* rendering, vde::core::gpu::Buffer* vb, vde::core::gpu::Buffer* uvb, vde::core::gpu::Buffer* ib)
+void USRenderComponent::Tick(float deltaTime)
+{
+	// ModelStore["matrix"] = scaleMatrix * rotationMatrix * translationMatrix*
+}
+
+void USRenderComponent::Draw(vde::core::gpu::RenderingCommandEncoder& Rendering)
 {
 	// Upload de la matrice vers le buffer GPU
 	ModelBuffer->Upload(ModelStore);
@@ -117,18 +117,24 @@ void RenderObject::Draw(vde::core::gpu::RenderingCommandEncoder* rendering, vde:
 	// - Set 0 : descriptorSetModel1 → matrice de translation
 	// - Set 1 : descriptorSet → texture 
 
-	rendering->BindDescriptorSets(0, {
+	Rendering.BindDescriptorSets(0, {
 		DescriptorSetModel.get(),
 		DescriptorSet.get()
 		});
 
 	// Commande de dessin pour le quad gauche
 	// Utilise les mêmes vertex/index buffers, mais avec des descriptor sets différents
-
-	rendering->DrawIndexed(
-		{vb, uvb}, // Vertex buffers (positions + coordonnées UV)
-		ib,        // Index buffer (ordre des sommets)
-		6          // 6 indices = 2 triangles = 1 quad
+	Renderable RenderableData;
+	bool result = AssetsManager::GetInstance().GetRenderable(DrawableName, RenderableData);
+	if (!result)
+	{
+		throw std::runtime_error("USRenderComponent::Draw: Renderable " + DrawableName + " not found in AssetsManager.");
+	}
+	
+	Rendering.DrawIndexed(
+		RenderableData.AllVertexBuffers,	// Vertex buffers (positions + coordonnées UV)
+		RenderableData.IndexBuffer,			// Index buffer (ordre des sommets)
+		RenderableData.IndexCount			// 6 indices = 2 triangles = 1 quad
 	);
 
 }
