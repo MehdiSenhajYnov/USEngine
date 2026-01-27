@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <GLFW/glfw3.h>
 
 namespace vde::core
 {
@@ -34,6 +35,7 @@ namespace vde::core
 		void RaiseShouldClose();
 
 		void PollEvents();
+		GLFWwindow* GetGLFWWindow();
 	};
 }
 

@@ -143,6 +143,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Components\CameraComponent.cpp" />
+    <ClCompile Include="Core\GameObjects\CameraObject.cpp" />
+    <ClCompile Include="Core\Managers\CameraManager.cpp" />
+    <ClCompile Include="Core\Managers\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Core\BaseObject.cpp" />
     <ClCompile Include="Core\Components\Component.cpp" />
@@ -157,14 +161,18 @@
   <ItemGroup>
     <ClInclude Include="Core\AllConcepts.h" />
     <ClInclude Include="Core\BaseObject.h" />
+    <ClInclude Include="Core\Components\CameraComponent.h" />
     <ClInclude Include="Core\Components\Component.h" />
     <ClInclude Include="Core\Components\Render\Renderable.h" />
     <ClInclude Include="Core\Components\Render\RenderComponent.h" />
     <ClInclude Include="Core\Components\TransformComponent.h" />
+    <ClInclude Include="Core\GameObjects\CameraObject.h" />
     <ClInclude Include="Core\GameObjects\GameObject.h" />
     <ClInclude Include="Core\GameObjects\RendererObject.h" />
     <ClInclude Include="Core\List.h" />
     <ClInclude Include="Core\Managers\AssetsManager.h" />
+    <ClInclude Include="Core\Managers\CameraManager.h" />
+    <ClInclude Include="Core\Managers\InputManager.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

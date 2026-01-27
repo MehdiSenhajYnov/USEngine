@@ -20,6 +20,10 @@
 #include "Core/Managers/AssetsManager.h"
 #include "Core/Scene/Scene.h"
 
+#include "Core/GameObjects/CameraObject.h"
+#include "Core/Managers/CameraManager.h"
+#include "Core/Managers/InputManager.h"
+
 // Géométrie du quad (carré 1x1 centré sur l'origine)
 //   0 (haut gauche)      3 (haut droit)
 //        +------------------+
@@ -49,6 +53,8 @@ int main(int argc, char** argv)
 	auto window = std::make_unique<vde::core::Window>(
 		vde::core::WindowDescriptor{ {1600, 900}, "Hello VDE", false }
 	);
+
+	InputManager::GetInstance().Initialize(*window);
 
 	// Contexte Vulkan (instance, device, swapchain, command pools)
 	auto graphicsContext = std::make_shared<vde::core::GraphicsContext>(*window);
@@ -119,6 +125,22 @@ int main(int argc, char** argv)
 	GameObject3->RenderComponent->Translate({1.0f, 0.0f, 0.0f});
 	GameObject4->RenderComponent->Translate({0.0f, -1.0f, 0.0f});
 
+	CameraObject* CameraGO = Scene.CreateGameObject<CameraObject>();
+	CameraGO->CameraComponent->SetMovable(true);
+	CameraGO->CameraComponent->SetPosition({ 0.0f, 0.0f, -3.0f });
+
+	// === Caméra TEST 2 ===
+	CameraObject* CameraGO2 = Scene.CreateGameObject<CameraObject>();
+	CameraGO2->CameraComponent->SetMovable(false);
+	CameraGO2->CameraComponent->SetPosition({ 0.0f, 3.0f, -6.0f });
+	CameraGO2->CameraComponent->SetRotation({ 0.0f, -20.0f }); 
+	CameraManager::GetInstance().SetMainCamera(CameraGO->CameraComponent);
+
+	static bool useCam1 = true;
+	static bool cWasDown = false;
+
+	// === Caméra TEST 2 ===
+
 	// === CAMERA ===
 	// Push constants = données rapides envoyées au shader (view/projection partagées)
 	vde::core::gpu::ShaderDataStore cameraDataStore(vs->PushConstants());
@@ -126,19 +148,48 @@ int main(int argc, char** argv)
 
 	float t = 0.0f;
 
+	using Clock = std::chrono::high_resolution_clock;
+	auto lastTime = Clock::now();
+
 	// === BOUCLE DE RENDU ===
 	do
 	{
 		window->PollEvents();
 		vde::imgui::BeginFrame();
 
-		// Caméra orbitale autour de l'origine
-		cameraDataStore["view"] = glm::lookAt(
-			glm::vec3(glm::cos(t), 0.5, glm::sin(t)) * 3.0f,
-			glm::vec3(0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);
-		t += 1.0f / 60.0f; // TODO: utiliser le vrai deltaTime
+		auto now = Clock::now();
+		float deltaTime = std::chrono::duration<float>(now - lastTime).count();
+		lastTime = now;
+
+		InputManager::GetInstance().Update();
+		if (InputManager::GetInstance().IsKeyDown(GLFW_KEY_ESCAPE))
+		{
+			window->RaiseShouldClose();
+		}
+		CameraManager::GetInstance().Update(deltaTime);
+
+		// === Switch Caméra ===
+		bool cDown = InputManager::GetInstance().IsKeyDown(GLFW_KEY_C);
+		if (cDown && !cWasDown)
+		{
+			useCam1 = !useCam1;
+			CameraManager::GetInstance().SetMainCamera(
+				useCam1 ? CameraGO->CameraComponent : CameraGO2->CameraComponent
+			);
+		}
+		cWasDown = cDown;
+		// === Switch Caméra ===
+
+		auto* cam = CameraManager::GetInstance().GetMainCamera();
+		if (cam)
+		{
+			float aspect = static_cast<float>(graphicsContext->Backbuffer().Size().x) /
+				static_cast<float>(graphicsContext->Backbuffer().Size().y);
+
+			cameraDataStore["projection"] = cam->GetProjectionMatrix(aspect);
+			cameraDataStore["view"] = cam->GetViewMatrix();
+
+		}
 
 		// Acquisition d'un command buffer pour enregistrer les commandes GPU
 		auto& cmdBuffer = graphicsContext->CommandPool().Acquire();

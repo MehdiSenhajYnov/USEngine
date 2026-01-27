@@ -1,5 +1,10 @@
-#include "window_impl_glfw_vulkan.h"
+#define GLFW_INCLUDE_VULKAN
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
+#include "window_impl_glfw_vulkan.h"
+#include <vulkan/vulkan.h>
 
 #ifndef NDEBUG
 # pragma comment(lib, "VkBootstrap-d.lib")
@@ -99,4 +104,9 @@ void Window::RaiseShouldClose()
 void Window::PollEvents()
 {
 	glfwPollEvents();
+}
+
+GLFWwindow* Window::GetGLFWWindow()
+{
+	return m_pImpl->window;
 }
