@@ -74,3 +74,4 @@ desktop.ini
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles/
+App/App.vcxproj
