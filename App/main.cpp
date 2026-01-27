@@ -162,25 +162,40 @@ int main(int argc, char** argv)
 		});
 
 	
+	// ------------------------------------------------------------------------
+	// PHASE 4.5 : Création de la scène et des GameObjects
+	// ------------------------------------------------------------------------
+	// Le système Scene/GameObject/Component suit une architecture ECS simplifiée :
+	// - Scene : conteneur principal qui gère le cycle de vie des GameObjects
+	// - GameObject : entité de base pouvant contenir plusieurs Components
+	// - Component : comportement attachable (rendu, physique, etc.)
+	//
+	// Disposition des 4 quads en croix :
+	//
+	//              [GO1]           (y = +1)
+	//                |
+	//     [GO2] --- [O] --- [GO3]  (x = -1, 0, +1)
+	//                |
+	//              [GO4]           (y = -1)
+	//
 	USScene Scene;
 	RendererObject* GameObject1 = Scene.CreateGameObject<RendererObject>();
 	RendererObject* GameObject2 = Scene.CreateGameObject<RendererObject>();
 	RendererObject* GameObject3 = Scene.CreateGameObject<RendererObject>();
 	RendererObject* GameObject4 = Scene.CreateGameObject<RendererObject>();
-	
-	// ====================================================================
-	// Chargement des textures
-	// ====================================================================
 
+	// Initialisation des RenderComponents avec le mesh "Quad" et la texture "AllMight"
+	// Chaque GameObject a son propre RenderComponent avec sa matrice de transformation
 	GameObject1->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject2->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject3->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject4->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 
-	GameObject1->RenderComponent->Translate({0.0f, 1.0f, 0.0f});
-	GameObject2->RenderComponent->Translate({-1.0f, 0.0f, 0.0f});
-	GameObject3->RenderComponent->Translate({1.0f, 0.0f, 0.0f});
-	GameObject4->RenderComponent->Translate({0.0f, -1.0f, 0.0f});
+	// Positionnement de chaque quad pour former une croix autour de l'origine
+	GameObject1->RenderComponent->Translate({0.0f, 1.0f, 0.0f});   // Haut
+	GameObject2->RenderComponent->Translate({-1.0f, 0.0f, 0.0f});  // Gauche
+	GameObject3->RenderComponent->Translate({1.0f, 0.0f, 0.0f});   // Droite
+	GameObject4->RenderComponent->Translate({0.0f, -1.0f, 0.0f});  // Bas
 	
 	// ------------------------------------------------------------------------
 	// PHASE 5 : Configuration des matrices de transformation
@@ -276,12 +291,12 @@ int main(int argc, char** argv)
 				Scene.Draw(*rendering);
 				
 				// ================================================================
-				// Note importante : Instancing vs Multiple Draw Calls
+				// Note : Instancing vs Multiple Draw Calls
 				// ================================================================
-				// Ici on fait 2 draw calls distincts, ce qui n'est pas optimal.
-				// Pour un grand nombre d'objets identiques, il vaudrait mieux
-				// utiliser l'instancing (glDrawElementsInstanced en OpenGL).
-				// Mais pour 2 objets, c'est négligeable.
+				// Actuellement, chaque RenderComponent fait un draw call.
+				// Pour un grand nombre d'objets identiques, l'instancing
+				// (DrawIndexedInstanced) serait plus performant.
+				// Avec 4 objets, l'impact est négligeable.
 			}
 		} // Le CommandEncoder se ferme automatiquement ici
 
@@ -361,103 +376,113 @@ int main(int argc, char** argv)
 //
 // PHASE 1 : Initialisation du système
 // ────────────────────────────────────
-// • Création de la fenêtre (GLFW) 1600x900
-// • Initialisation du contexte Vulkan (device, swapchain, pools)
-// • Chargement des plugins (FileFormat_stbimage, FileFormat_obj)
-// • Setup de l'interface ImGui
+// - Création de la fenêtre (GLFW) 1600x900
+// - Initialisation du contexte Vulkan (device, swapchain, pools)
+// - Chargement des plugins (FileFormat_stbimage, FileFormat_obj)
+// - Setup de l'interface ImGui
 //
 // PHASE 2 : Création des ressources GPU
 // ──────────────────────────────────────
-// • Vertex Buffer (positions 3D des sommets)
-// • UV Buffer (coordonnées de texture)
-// • Index Buffer (ordre de dessin des triangles)
-// • Texture 1 : AllMight.jpg (image JPG décodée par stb_image)
-// • Texture 2 : cage2.png (image PNG décodée par stb_image)
+// - Vertex Buffer (positions 3D des sommets du quad)
+// - UV Buffer (coordonnées de texture)
+// - Index Buffer (6 indices pour 2 triangles)
+// - Enregistrement dans l'AssetsManager comme "Quad"
+// - Chargement de la texture "AllMight" (JPG via stb_image)
 //
 // PHASE 3 : Chargement des shaders
 // ─────────────────────────────────
-// • Vertex Shader (base.vert.spv) - Traite chaque sommet
-// • Fragment Shader (base.frag.spv) - Applique les textures
+// - Vertex Shader (base.vert.spv) : transformations MVP
+// - Fragment Shader (base.frag.spv) : échantillonnage de texture
 //
 // PHASE 4 : Création du pipeline graphique
 // ─────────────────────────────────────────
-// • Configuration du pipeline Vulkan
-// • Setup des descriptor sets :
-//   - Set 0 : Uniform buffers (matrices modèle)
-//   - Set 1 : Samplers (textures)
-// • Création des uniform buffers pour 2 matrices modèle :
-//   - Objet 1 : Translation (-1, 0, 0) → Quad gauche
-//   - Objet 2 : Translation (+1, 0, 0) → Quad droit
+// - Configuration du pipeline Vulkan
+// - Layout des descriptor sets :
+//   - Set 0, Binding 0 : Uniform buffer (matrice modèle)
+//   - Set 1, Binding 0 : Sampler2D (texture)
+//
+// PHASE 4.5 : Création de la scène (architecture ECS)
+// ────────────────────────────────────────────────────
+// - USScene : conteneur principal des GameObjects
+// - 4 RendererObjects créés, chacun avec un RenderComponent
+// - Disposition en croix autour de l'origine :
+//   - GO1 (y=+1), GO2 (x=-1), GO3 (x=+1), GO4 (y=-1)
+// - Chaque RenderComponent possède :
+//   - Sa propre matrice modèle (uniform buffer)
+//   - Ses propres descriptor sets (texture + matrice)
 //
 // PHASE 5 : Configuration des matrices de caméra
 // ───────────────────────────────────────────────
-// • Matrice de projection (perspective 45°, aspect 16:9)
-// • Matrice de vue (caméra orbitale autour de l'origine)
+// - Matrice de projection (perspective 45 deg, aspect 16:9)
+// - Matrice de vue (caméra orbitale autour de l'origine)
+// - Stockées dans ShaderDataStore pour les push constants
 //
-// PHASE 6 : Boucle de rendu (60 FPS)
-// ───────────────────────────────────
+// PHASE 6 : Boucle de rendu
+// ─────────────────────────
 // Pour chaque frame :
-//   1. Traiter les événements fenêtre (clavier, souris, fermeture)
-//   2. Mettre à jour la caméra (rotation orbitale)
-//   3. Acquérir un command buffer
-//   4. Enregistrer les commandes de dessin :
-//      a. Clear du backbuffer (couleur de fond)
-//      b. Début de la passe de rendu
-//      c. Update des push constants (view/projection)
-//      d. Dessiner le quad gauche (texture AllMight)
-//      e. Dessiner le quad droit (texture cage)
-//      f. Fin de la passe de rendu
-//   5. Soumettre le command buffer au GPU
-//   6. Rendre l'interface ImGui
-//   7. Présenter à l'écran (swap des buffers)
+//   1. PollEvents() - traitement des événements fenêtre
+//   2. Mise à jour de la caméra (rotation orbitale via lookAt)
+//   3. Acquisition d'un command buffer
+//   4. Enregistrement des commandes :
+//      a. ClearImageColor (fond bleu foncé)
+//      b. BeginRendering avec le pipeline
+//      c. UpdatePushConstants (view/projection)
+//      d. Scene.Tick() et Scene.Draw() -> dessine les 4 quads
+//   5. Submit() + Present()
+//   6. Rendu ImGui par-dessus
 //
 // PHASE 7 : Nettoyage (ordre LIFO)
 // ─────────────────────────────────
-// • WaitForIdle() - Attente de la fin des opérations GPU
-// • Destruction des uniform buffers (matrices modèle)
-// • Destruction des descriptor sets
-// • Destruction des buffers de géométrie (vertex, UV, index)
-// • Destruction du pipeline et des shaders
-// • Arrêt d'ImGui
-// • Destruction des textures
-// • Destruction du contexte Vulkan
-// • Fermeture de la fenêtre
+// - WaitForIdle() - synchronisation GPU
+// - Scene.Reset() - libère les ressources des GameObjects
+// - AssetsManager.Reset() - libère les textures
+// - Buffers de géométrie (ib, uvb, vb)
+// - Pipeline et shaders
+// - ImGui::Shutdown()
+// - GraphicsContext (détruit Vulkan)
+// - Window (ferme GLFW)
 //
 // ╔══════════════════════════════════════════════════════════════════════════╗
-// ║                        CONCEPTS CLÉS UTILISÉS                            ║
+// ║                        ARCHITECTURE DU PROJET                            ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
-// 🏗️ ARCHITECTURE
-// • Pattern pImpl : Cache les détails Vulkan dans GraphicsContext::Impl
-// • RAII (Resource Acquisition Is Initialization) : unique_ptr partout
-// • Command Pattern : Enregistrement des commandes GPU
-// • Descriptor Sets : Liaison dynamique des ressources aux shaders
+// PATTERNS UTILISES
+// -----------------
+// - pImpl : Cache les détails Vulkan dans GraphicsContext::Impl
+// - RAII : unique_ptr/shared_ptr pour la gestion mémoire automatique
+// - ECS simplifié : Scene > GameObject > Component
+// - Singleton : AssetsManager pour centraliser les ressources
+// - Command Pattern : Enregistrement des commandes GPU
 //
-// 🎨 RENDU
-// • Frame Overlap : 2 frames en parallèle pour maximiser les performances
-// • Double Buffering : Swapchain avec backbuffer/frontbuffer
-// • Indexed Drawing : Réutilisation des sommets via index buffer
-// • Push Constants : Données légères envoyées rapidement au shader
-// • Uniform Buffers : Données volumineuses (matrices) partagées
+// SYSTEME DE RENDU
+// ----------------
+// - Frame Overlap : 2 frames en parallèle (GPU/CPU)
+// - Double Buffering : Swapchain avec backbuffer/frontbuffer
+// - Indexed Drawing : Réutilisation des sommets via index buffer
+// - Push Constants : Matrices view/projection (rapide, partagées)
+// - Uniform Buffers : Matrices modèle (par objet, via descriptor set 0)
+// - Sampler2D : Textures (via descriptor set 1)
 //
-// 📐 MATHÉMATIQUES
-// • Matrices de transformation (Model-View-Projection)
-// • Translation : glm::translate() pour positionner les objets
-// • Projection perspective : glm::perspective() pour la 3D
-// • LookAt : glm::lookAt() pour positionner/orienter la caméra
+// PIPELINE MVP (Model-View-Projection)
+// ------------------------------------
+//   Vertex Shader :
+//     gl_Position = projection * view * model * vec4(position, 1.0)
 //
-// 🔧 VULKAN
-// • Device : Représente la carte graphique
-// • Swapchain : Gère l'affichage (double/triple buffering)
-// • Command Buffers : Séquence de commandes GPU
-// • Descriptor Sets : Lient les ressources (textures, buffers) aux shaders
-// • Pipeline : Configuration complète du rendu (shaders, états, formats)
+//   - model      : matrice de transformation de l'objet (uniform buffer)
+//   - view       : position/orientation de la caméra (push constant)
+//   - projection : perspective 3D (push constant)
 //
-// 📊 RÉSULTAT VISUEL
-// ──────────────────
-// L'application affiche 2 quads texturés côte à côte :
-// • Quad GAUCHE : Texture AllMight (JPG)
-// • Quad DROITE : Texture cage (PNG)
-// La caméra tourne autour des deux objets en cercle.
+// RESULTAT VISUEL
+// ---------------
+// 4 quads texturés disposés en croix, vus par une caméra orbitale :
+//
+//              [Quad]
+//                |
+//     [Quad] -- [O] -- [Quad]
+//                |
+//              [Quad]
+//
+// Tous les quads utilisent la même texture (AllMight.jpg).
+// La caméra tourne autour de l'origine en cercle.
 //
 // ============================================================================
