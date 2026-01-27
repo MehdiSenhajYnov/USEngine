@@ -171,10 +171,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build\App\Debug\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</BrowseInformationFile>
+      <BrowseInformationFile>$(SolutionDir)\build\App\Debug\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <ConformanceMode>true</ConformanceMode>
@@ -199,37 +199,37 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleDependenciesFile>
-      <ModuleOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleOutputFile>
+      <ModuleDependenciesFile>$(SolutionDir)\build\App\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>$(SolutionDir)\build\App\Debug\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build\App\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</SourceDependenciesFile>
+      <SourceDependenciesFile>$(SolutionDir)\build\App\Debug\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>$(SolutionDir)\build\App\Debug\App.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>$(SolutionDir)\build\App\Debug\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <BuildStlModules>false</BuildStlModules>
@@ -239,7 +239,7 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\external\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\Engine\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\ImGui\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;$(SolutionDir)\external\include;$(SolutionDir)\Engine\include;$(SolutionDir)\ImGui\include;$(SolutionDir)\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Core\Components\Render\RenderComponent.cpp">
@@ -248,10 +248,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build\App\Debug\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</BrowseInformationFile>
+      <BrowseInformationFile>$(SolutionDir)\build\App\Debug\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <ConformanceMode>true</ConformanceMode>
@@ -276,37 +276,37 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleDependenciesFile>
-      <ModuleOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleOutputFile>
+      <ModuleDependenciesFile>$(SolutionDir)\build\App\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>$(SolutionDir)\build\App\Debug\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build\App\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</SourceDependenciesFile>
+      <SourceDependenciesFile>$(SolutionDir)\build\App\Debug\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>$(SolutionDir)\build\App\Debug\App.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>$(SolutionDir)\build\App\Debug\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <BuildStlModules>false</BuildStlModules>
@@ -316,7 +316,7 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\external\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\Engine\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\ImGui\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;$(SolutionDir)\external\include;$(SolutionDir)\Engine\include;$(SolutionDir)\ImGui\include;$(SolutionDir)\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Core\Components\TransformComponent.cpp" />
@@ -326,10 +326,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build\App\Debug\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</BrowseInformationFile>
+      <BrowseInformationFile>$(SolutionDir)\build\App\Debug\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <ConformanceMode>true</ConformanceMode>
@@ -354,37 +354,37 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleDependenciesFile>
-      <ModuleOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleOutputFile>
+      <ModuleDependenciesFile>$(SolutionDir)\build\App\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>$(SolutionDir)\build\App\Debug\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build\App\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</SourceDependenciesFile>
+      <SourceDependenciesFile>$(SolutionDir)\build\App\Debug\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>$(SolutionDir)\build\App\Debug\App.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>$(SolutionDir)\build\App\Debug\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <BuildStlModules>false</BuildStlModules>
@@ -394,7 +394,7 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\external\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\Engine\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\ImGui\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;$(SolutionDir)\external\include;$(SolutionDir)\Engine\include;$(SolutionDir)\ImGui\include;$(SolutionDir)\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Core\GameObjects\RendererObject.cpp" />
@@ -407,10 +407,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build\App\Debug\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</BrowseInformationFile>
+      <BrowseInformationFile>$(SolutionDir)\build\App\Debug\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <ConformanceMode>true</ConformanceMode>
@@ -435,37 +435,37 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleDependenciesFile>
-      <ModuleOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ModuleOutputFile>
+      <ModuleDependenciesFile>$(SolutionDir)\build\App\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>$(SolutionDir)\build\App\Debug\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build\App\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\build\App\Debug\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)\build\App\Debug\App_Debug.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</SourceDependenciesFile>
+      <SourceDependenciesFile>$(SolutionDir)\build\App\Debug\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\App.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>$(SolutionDir)\build\App\Debug\App.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\build\App\Debug\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>$(SolutionDir)\build\App\Debug\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <BuildStlModules>false</BuildStlModules>
@@ -475,7 +475,7 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\external\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\Engine\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\ImGui\include;C:\Users\mehdi\Downloads\vde-ynov\vde-ynov\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.4.304.1\Include;$(SolutionDir)\external\include;$(SolutionDir)\Engine\include;$(SolutionDir)\ImGui\include;$(SolutionDir)\App\include;C:\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
   </ItemGroup>
