@@ -16,6 +16,7 @@
 #include <imgui/imgui_vde.h>
 
 #include "OptRef.h"
+#include "Core/Components/TransformComponent.h"
 #include "Core/Components/Render/RenderComponent.h"
 #include "Core/GameObjects/RendererObject.h"
 #include "Core/Managers/AssetsManager.h"
@@ -123,11 +124,6 @@ int main(int argc, char** argv)
 	GameObject3->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject4->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 
-	//GameObject1->Translate({0.0f, 1.0f, 0.0f});
-	//GameObject2->Translate({-1.0f, 0.0f, 0.0f});
-	//GameObject3->Translate({1.0f, 0.0f, 0.0f});
-	//GameObject4->Translate({0.0f, -1.0f, 0.0f});
-
 	CameraObject* CameraGO = Scene.CreateGameObject<CameraObject>();
 	CameraGO->CameraComponent->SetMovable(true);
 	CameraGO->CameraComponent->SetPosition({ 0.0f, 0.0f, -3.0f });
@@ -153,6 +149,12 @@ int main(int argc, char** argv)
 
 	using Clock = std::chrono::high_resolution_clock;
 	auto lastTime = Clock::now();
+
+
+	GameObject1->Transform->Translate({ 0.0f, 1.0f, 0.0f });
+	GameObject2->Transform->Translate({ -1.0f, 0.0f, 0.0f });
+	GameObject3->Transform->Translate({ 1.0f, 0.0f, 0.0f });
+	GameObject4->Transform->Translate({ 0.0f, -1.0f, 0.0f });
 
 	// === BOUCLE DE RENDU ===
 	do
@@ -193,6 +195,8 @@ int main(int argc, char** argv)
 			cameraDataStore["view"] = cam->GetViewMatrix();
 
 		}
+
+
 
 		// Acquisition d'un command buffer pour enregistrer les commandes GPU
 		auto& cmdBuffer = graphicsContext->CommandPool().Acquire();
