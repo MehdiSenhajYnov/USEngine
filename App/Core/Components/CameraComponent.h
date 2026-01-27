@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <glm/glm.hpp>
 #include "Component.h"
+#include "TransformComponent.h"
 
 class USCameraComponent : public USComponent
 {
@@ -13,17 +14,11 @@ public:
 	bool IsMovable() const;
 	void SetMovable(bool value);
 
-	const glm::vec3& GetPosition() const;
-	void SetPosition(const glm::vec3& pos);
-	void Move(const glm::vec3& delta);
-
-	glm::vec2 GetRotation() const;
-	void SetRotation(const glm::vec2& rot);
-	void AddRotation(const glm::vec2& delta);
+	USTransformComponent* GetTransform() const;
+	void SetTransform(USTransformComponent* transform);
 
 private:
-	glm::vec3 position;
-	glm::vec2 rotation;
+	USTransformComponent* Transform = nullptr;
 	float fovDeg;
 	float nearPlane;
 	float farPlane;

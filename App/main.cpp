@@ -130,13 +130,13 @@ int main(int argc, char** argv)
 
 	CameraObject* CameraGO = Scene.CreateGameObject<CameraObject>();
 	CameraGO->CameraComponent->SetMovable(true);
-	CameraGO->CameraComponent->SetPosition({ 0.0f, 0.0f, -3.0f });
+	CameraGO->Transform->SetPosition({ 0.0f, 0.0f, -3.0f });
 
 	// === Caméra TEST 2 ===
 	CameraObject* CameraGO2 = Scene.CreateGameObject<CameraObject>();
 	CameraGO2->CameraComponent->SetMovable(false);
-	CameraGO2->CameraComponent->SetPosition({ 0.0f, 3.0f, -6.0f });
-	CameraGO2->CameraComponent->SetRotation({ 0.0f, -20.0f }); 
+	CameraGO2->Transform->SetPosition({ 0.0f, 3.0f, -6.0f });
+	CameraGO2->Transform->SetRotation({ 0.0f, -20.0f, 0.0f }); 
 	CameraManager::GetInstance().SetMainCamera(CameraGO->CameraComponent);
 
 	static bool useCam1 = true;
