@@ -75,3 +75,4 @@ CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles/
 App/App.vcxproj
+AGENTS.md
