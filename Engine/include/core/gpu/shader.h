@@ -2,9 +2,15 @@
 #define VDE__CORE__GPU__SHADER_H
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <filesystem>
+#include <stdexcept>
+#include <string>
 #include <unordered_map>
+#include <vector>
+
 #include <glm/glm.hpp>
 
 #include <core/gpu/enums.h>

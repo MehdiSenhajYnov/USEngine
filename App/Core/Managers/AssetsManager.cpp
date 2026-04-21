@@ -60,3 +60,13 @@ vde::core::assets::Asset<vde::core::gpu::Image>* AssetsManager::LoadTexture(
 	LoadedTextures[TextureName] = std::move(Texture);
 	return LoadedTextures[TextureName].get();
 }
+
+vde::core::assets::Asset<vde::core::gpu::Image>* AssetsManager::StoreTexture(
+	const std::string& TextureName,
+	std::unique_ptr<vde::core::gpu::Image> Texture)
+{
+	using ImageAsset = vde::core::assets::Asset<vde::core::gpu::Image>;
+
+	LoadedTextures[TextureName] = std::make_unique<ImageAsset>(std::move(Texture));
+	return LoadedTextures[TextureName].get();
+}

@@ -6,7 +6,7 @@
 #include <core/gpu/image.h>
 #include <util/plugin.h>
 
-class __declspec(dllexport) FileFormat_stbimage
+class VDE_PLUGIN_EXPORT FileFormat_stbimage
 	: public vde::util::FileFormatPlugin<vde::core::gpu::Image>
 {
 	vde::core::GraphicsContext* m_graphicsContext;

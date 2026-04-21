@@ -8,6 +8,7 @@
 #include <util/badge.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace vde::core

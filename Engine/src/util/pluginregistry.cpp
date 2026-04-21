@@ -3,17 +3,27 @@
 #include <unordered_map>
 #include <vector>
 
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
-#include <Windows.h>
+#if defined(_WIN32)
+# define WIN32_LEAN_AND_MEAN
+# define WIN32_EXTRA_LEAN
+# include <Windows.h>
+#else
+# include <dlfcn.h>
+#endif
 
 using namespace vde::util;
 
 struct PluginRegistry::Impl
 {
+#if defined(_WIN32)
+	using ModuleHandle = HMODULE;
+#else
+	using ModuleHandle = void*;
+#endif
+
 	struct Module
 	{
-		HMODULE     hModule;
+		ModuleHandle hModule;
 		PluginBase* plugin;
 	};
 
@@ -32,7 +42,11 @@ PluginRegistry::~PluginRegistry() noexcept
 		for (auto& p : plugins)
 		{
 			delete p.plugin;
+#if defined(_WIN32)
 			FreeLibrary(p.hModule);
+#else
+			dlclose(p.hModule);
+#endif
 		}
 	}
 }
@@ -44,15 +58,32 @@ PluginContext& PluginRegistry::Context()
 
 void PluginRegistry::Load(const std::filesystem::path& path)
 {
-	HMODULE module = LoadLibraryW(path.c_str());
+	Impl::ModuleHandle module = nullptr;
+
+#if defined(_WIN32)
+	module = LoadLibraryW(path.c_str());
+#else
+	module = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL);
+#endif
 	if (module)
 	{
+#if defined(_WIN32)
 		CreatePluginFn createFn = reinterpret_cast<CreatePluginFn>(GetProcAddress(module, "CreatePlugin"));
+#else
+		CreatePluginFn createFn = reinterpret_cast<CreatePluginFn>(dlsym(module, "CreatePlugin"));
+#endif
 		if (createFn)
 		{
 			PluginBase* plugin = createFn(&m_context);
 			m_pImpl->modules[plugin->Family()].push_back({ module, plugin });
+			return;
 		}
+
+#if defined(_WIN32)
+		FreeLibrary(module);
+#else
+		dlclose(module);
+#endif
 	}
 }
 
@@ -61,8 +92,17 @@ void PluginRegistry::LoadAllFromDirectory(const std::filesystem::path& directory
 	if (!std::filesystem::is_directory(directory))
 		return;
 
+	static constexpr auto kModuleExtension =
+#if defined(_WIN32)
+		".dll";
+#elif defined(__APPLE__)
+		".dylib";
+#else
+		".so";
+#endif
+
 	for (const auto& e : std::filesystem::directory_iterator(directory))
-		if (e.is_regular_file() && e.path().extension() == ".dll")
+		if (e.is_regular_file() && e.path().extension() == kModuleExtension)
 			Load(e.path());
 }
 

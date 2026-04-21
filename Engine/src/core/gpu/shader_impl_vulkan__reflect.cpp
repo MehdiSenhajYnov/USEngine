@@ -1,11 +1,5 @@
 #include "shader_impl_vulkan__reflect.h"
 
-#ifndef NDEBUG
-# pragma comment(lib, "SPIRV-Reflect-d.lib")
-#else /* !NDEBUG */
-# pragma comment(lib, "SPIRV-Reflect.lib")
-#endif /* !NDEBUG */
-
 vde::core::gpu::EShaderVariableType s_ToVde(SpvOp op, SpvReflectTypeFlags flags, const SpvReflectTypeDescription::Traits& traits)
 {
 	using namespace vde::core::gpu;

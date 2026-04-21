@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <vector>
 
 namespace vde::util
 {

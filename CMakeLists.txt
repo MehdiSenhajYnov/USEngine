@@ -2,9 +2,15 @@ cmake_minimum_required(VERSION 3.24)
 
 project(vde_ynov LANGUAGES CXX)
 
+include(FetchContent)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+option(VDE_FETCH_MISSING_DEPS "Download missing third-party dependencies at configure time" ON)
 
 if(WIN32 AND NOT MSVC)
     message(FATAL_ERROR "Ce projet doit etre configure avec un toolchain MSVC/Visual Studio dans CLion, pas MinGW/GNU.")
@@ -12,23 +18,10 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if(MSVC)
-    add_compile_options(/MP /W3 /permissive- /EHsc)
-else()
-    add_compile_options(-Wall -Wextra)
-endif()
-
 set(VDE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(VDE_EXTERNAL_INCLUDE_DIR ${VDE_ROOT}/external/include)
-set(VDE_EXTERNAL_LIB_DIR ${VDE_ROOT}/external/lib)
 set(VDE_ENGINE_INCLUDE_DIR ${VDE_ROOT}/Engine/include)
 set(VDE_IMGUI_INCLUDE_DIR ${VDE_ROOT}/Imgui/include)
-set(VDE_GLFW_LIB_DEBUG ${VDE_EXTERNAL_LIB_DIR}/glfw3-s-d.lib)
-set(VDE_GLFW_LIB_RELEASE ${VDE_EXTERNAL_LIB_DIR}/glfw3-s.lib)
-set(VDE_VKBOOTSTRAP_LIB_DEBUG ${VDE_EXTERNAL_LIB_DIR}/VkBootstrap-d.lib)
-set(VDE_VKBOOTSTRAP_LIB_RELEASE ${VDE_EXTERNAL_LIB_DIR}/VkBootstrap.lib)
-set(VDE_SPIRV_REFLECT_LIB_DEBUG ${VDE_EXTERNAL_LIB_DIR}/SPIRV-Reflect-d.lib)
-set(VDE_SPIRV_REFLECT_LIB_RELEASE ${VDE_EXTERNAL_LIB_DIR}/SPIRV-Reflect.lib)
+set(VDE_COMPAT_INCLUDE_DIR ${VDE_ROOT}/Compat/include)
 set(VDE_RUNTIME_ROOT ${CMAKE_BINARY_DIR})
 
 if(EXISTS "${VDE_ROOT}/App/assets")
@@ -37,6 +30,125 @@ elseif(EXISTS "${VDE_ROOT}/bin/assets")
     set(VDE_ASSETS_SOURCE_DIR "${VDE_ROOT}/bin/assets")
 else()
     set(VDE_ASSETS_SOURCE_DIR "")
+endif()
+
+if(EXISTS "${VDE_ROOT}/assets.zip")
+    set(VDE_ASSETS_ARCHIVE "${VDE_ROOT}/assets.zip")
+else()
+    set(VDE_ASSETS_ARCHIVE "")
+endif()
+
+function(vde_require_target out_var)
+    foreach(candidate IN LISTS ARGN)
+        if(TARGET "${candidate}")
+            set(${out_var} "${candidate}" PARENT_SCOPE)
+            return()
+        endif()
+    endforeach()
+
+    string(REPLACE ";" ", " candidate_list "${ARGN}")
+    message(FATAL_ERROR "Impossible de trouver une target compatible parmi: ${candidate_list}")
+endfunction()
+
+find_package(Vulkan REQUIRED)
+
+find_package(glfw3 CONFIG QUIET)
+if(TARGET glfw)
+    set(VDE_GLFW_TARGET glfw)
+elseif(TARGET glfw3)
+    set(VDE_GLFW_TARGET glfw3)
+elseif(VDE_FETCH_MISSING_DEPS)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG 3.4
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(glfw)
+    vde_require_target(VDE_GLFW_TARGET glfw glfw3)
+else()
+    message(FATAL_ERROR "GLFW est introuvable. Activez VDE_FETCH_MISSING_DEPS ou installez glfw.")
+endif()
+
+find_package(glm CONFIG QUIET)
+if(TARGET glm::glm)
+    set(VDE_GLM_TARGET glm::glm)
+elseif(TARGET glm)
+    set(VDE_GLM_TARGET glm)
+elseif(VDE_FETCH_MISSING_DEPS)
+    set(GLM_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.1
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(glm)
+    vde_require_target(VDE_GLM_TARGET glm::glm glm-header-only glm)
+else()
+    message(FATAL_ERROR "GLM est introuvable. Activez VDE_FETCH_MISSING_DEPS ou installez glm.")
+endif()
+
+find_package(vk-bootstrap CONFIG QUIET)
+if(NOT TARGET vk-bootstrap::vk-bootstrap AND NOT TARGET vk-bootstrap)
+    if(NOT VDE_FETCH_MISSING_DEPS)
+        message(FATAL_ERROR "vk-bootstrap est introuvable. Activez VDE_FETCH_MISSING_DEPS ou installez-le.")
+    endif()
+
+    set(VK_BOOTSTRAP_TEST OFF CACHE BOOL "" FORCE)
+    set(VK_BOOTSTRAP_INSTALL OFF CACHE BOOL "" FORCE)
+    set(VK_BOOTSTRAP_DISABLE_WARNINGS ON CACHE BOOL "" FORCE)
+    set(VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE ON CACHE BOOL "" FORCE)
+    FetchContent_Declare(vkbootstrap
+        GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap.git
+        GIT_TAG v1.4.341
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(vkbootstrap)
+endif()
+vde_require_target(VDE_VKBOOTSTRAP_TARGET vk-bootstrap::vk-bootstrap vk-bootstrap)
+if(TARGET vk-bootstrap)
+    set_target_properties(vk-bootstrap PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+find_package(SPIRV-Reflect CONFIG QUIET)
+if(NOT TARGET spirv-reflect-static AND NOT TARGET spirv-reflect)
+    if(NOT VDE_FETCH_MISSING_DEPS)
+        message(FATAL_ERROR "SPIRV-Reflect est introuvable. Activez VDE_FETCH_MISSING_DEPS ou installez-le.")
+    endif()
+
+    set(SPIRV_REFLECT_EXECUTABLE OFF CACHE BOOL "" FORCE)
+    set(SPIRV_REFLECT_STATIC_LIB ON CACHE BOOL "" FORCE)
+    set(SPIRV_REFLECT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(SPIRV_REFLECT_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(spirv_reflect
+        GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Reflect.git
+        GIT_TAG vulkan-sdk-1.4.341.0
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(spirv_reflect)
+endif()
+vde_require_target(VDE_SPIRV_REFLECT_TARGET spirv-reflect-static spirv-reflect)
+
+if(TARGET spirv-reflect-static)
+    target_include_directories(spirv-reflect-static PUBLIC ${VDE_COMPAT_INCLUDE_DIR})
+    set_target_properties(spirv-reflect-static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+if(TARGET spirv-reflect)
+    target_include_directories(spirv-reflect PUBLIC ${VDE_COMPAT_INCLUDE_DIR})
+    set_target_properties(spirv-reflect PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+add_library(vde_compat_headers INTERFACE)
+target_include_directories(vde_compat_headers INTERFACE ${VDE_COMPAT_INCLUDE_DIR})
+
+add_library(vde_project_warnings INTERFACE)
+if(MSVC)
+    target_compile_options(vde_project_warnings INTERFACE /MP /W3 /permissive- /EHsc)
+else()
+    target_compile_options(vde_project_warnings INTERFACE -Wall -Wextra -Wpedantic)
 endif()
 
 function(vde_set_runtime_output_dirs target_name output_dir)
@@ -53,8 +165,6 @@ function(vde_set_runtime_output_dirs target_name output_dir)
         )
     endforeach()
 endfunction()
-
-find_package(Vulkan REQUIRED)
 
 add_library(VDE::Vulkan ALIAS Vulkan::Vulkan)
 
@@ -88,18 +198,19 @@ add_library(vde_engine STATIC
 target_include_directories(vde_engine
     PUBLIC
         ${VDE_ENGINE_INCLUDE_DIR}
-        ${VDE_EXTERNAL_INCLUDE_DIR}
 )
 
 target_link_libraries(vde_engine
     PUBLIC
         VDE::Vulkan
-        debug ${VDE_GLFW_LIB_DEBUG}
-        optimized ${VDE_GLFW_LIB_RELEASE}
-        debug ${VDE_VKBOOTSTRAP_LIB_DEBUG}
-        optimized ${VDE_VKBOOTSTRAP_LIB_RELEASE}
-        debug ${VDE_SPIRV_REFLECT_LIB_DEBUG}
-        optimized ${VDE_SPIRV_REFLECT_LIB_RELEASE}
+        ${VDE_GLFW_TARGET}
+        ${VDE_GLM_TARGET}
+        ${VDE_VKBOOTSTRAP_TARGET}
+        ${VDE_SPIRV_REFLECT_TARGET}
+        vde_compat_headers
+        ${CMAKE_DL_LIBS}
+    PRIVATE
+        vde_project_warnings
 )
 
 set_target_properties(vde_engine PROPERTIES
@@ -121,7 +232,6 @@ target_include_directories(vde_imgui
     PUBLIC
         ${VDE_IMGUI_INCLUDE_DIR}
         ${VDE_ENGINE_INCLUDE_DIR}
-        ${VDE_EXTERNAL_INCLUDE_DIR}
 )
 
 target_compile_definitions(vde_imgui
@@ -133,8 +243,9 @@ target_link_libraries(vde_imgui
     PUBLIC
         vde_engine
         VDE::Vulkan
-        debug ${VDE_GLFW_LIB_DEBUG}
-        optimized ${VDE_GLFW_LIB_RELEASE}
+        ${VDE_GLFW_TARGET}
+    PRIVATE
+        vde_project_warnings
 )
 
 set_target_properties(vde_imgui PROPERTIES
@@ -148,10 +259,13 @@ function(vde_add_plugin target_name)
     target_include_directories(${target_name}
         PRIVATE
             ${ARG_INCLUDE_DIR}
-            ${VDE_ENGINE_INCLUDE_DIR}
-            ${VDE_EXTERNAL_INCLUDE_DIR}
     )
-    target_link_libraries(${target_name} PRIVATE vde_engine)
+    target_link_libraries(${target_name}
+        PRIVATE
+            vde_engine
+            vde_compat_headers
+            vde_project_warnings
+    )
 
     vde_set_runtime_output_dirs(${target_name} "${VDE_RUNTIME_ROOT}/engine/plugins")
 endfunction()
@@ -164,6 +278,7 @@ vde_add_plugin(vde_fileformat_obj
 )
 
 set_target_properties(vde_fileformat_obj PROPERTIES OUTPUT_NAME "FileFormat_obj")
+target_compile_definitions(vde_fileformat_obj PRIVATE GLM_ENABLE_EXPERIMENTAL)
 
 vde_add_plugin(vde_fileformat_stbimage
     INCLUDE_DIR ${VDE_ROOT}/Plugins/FileFormat_stbimage/include
@@ -196,9 +311,6 @@ add_executable(vde_app
 
 target_include_directories(vde_app
     PRIVATE
-        ${VDE_ENGINE_INCLUDE_DIR}
-        ${VDE_IMGUI_INCLUDE_DIR}
-        ${VDE_EXTERNAL_INCLUDE_DIR}
         ${VDE_ROOT}/App
 )
 
@@ -206,7 +318,10 @@ target_link_libraries(vde_app
     PRIVATE
         vde_engine
         vde_imgui
+        vde_compat_headers
+        vde_project_warnings
 )
+target_compile_definitions(vde_app PRIVATE GLM_ENABLE_EXPERIMENTAL)
 
 set_target_properties(vde_app PROPERTIES
     OUTPUT_NAME "App"
@@ -238,6 +353,11 @@ if(VDE_ASSETS_SOURCE_DIR)
             "${VDE_ASSETS_SOURCE_DIR}"
             "${VDE_RUNTIME_DIR}/assets"
         COMMENT "Copy app assets"
+    )
+elseif(VDE_ASSETS_ARCHIVE)
+    add_custom_command(TARGET vde_app POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E chdir "${VDE_RUNTIME_DIR}" ${CMAKE_COMMAND} -E tar xf "${VDE_ASSETS_ARCHIVE}"
+        COMMENT "Extract app assets"
     )
 endif()
 

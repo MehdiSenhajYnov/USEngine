@@ -3,7 +3,9 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <variant>
+#include <vector>
 
 #include <core/gpu/shader.h>
 #include <core/gpu/enums.h>

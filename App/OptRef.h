@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <optional>
 #include <stdexcept>
 
@@ -39,4 +40,3 @@ public:
 		return nullptr;
 	}
 };
-

@@ -21,10 +21,22 @@ namespace vde::core::assets
 		{
 		}
 
+		explicit Asset(std::unique_ptr<T> value)
+			: m_source(nullptr)
+			, m_value(std::move(value))
+		{
+		}
+
 		void Reset()
 		{
 			m_source.reset();
 			m_value.reset();
+		}
+
+		void SetValue(std::unique_ptr<T> value)
+		{
+			m_source.reset();
+			m_value = std::move(value);
 		}
 
 		template<typename... ARGS>
@@ -55,6 +67,7 @@ namespace vde::core::assets
 			return false;
 		}
 
+		bool HasValue() const { return m_value != nullptr; }
 		T& Value() { return *m_value; }
 		operator T& () { return Value(); }
 	};

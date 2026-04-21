@@ -33,8 +33,8 @@ void CameraManager::Update(float dt)
 
 		// D�placement dans la direction du regard (forward complet avec Y)
 		glm::vec3 move(0.0f);
-		if (input.IsKeyDown(Key::Z) || input.IsKeyDown(Key::W)) move += moveForward;
-		if (input.IsKeyDown(Key::S)) move -= moveForward;
+		if (input.IsKeyDown(Key::Z) || input.IsKeyDown(Key::W)) move += forward;
+		if (input.IsKeyDown(Key::S)) move -= forward;
 		if (input.IsKeyDown(Key::Q) || input.IsKeyDown(Key::A)) move -= right;
 		if (input.IsKeyDown(Key::D)) move += right;
 

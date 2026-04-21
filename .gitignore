@@ -74,5 +74,8 @@ desktop.ini
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles/
+cmake-build-*/
+compile_commands.json
 App/App.vcxproj
 AGENTS.md
+imgui.ini

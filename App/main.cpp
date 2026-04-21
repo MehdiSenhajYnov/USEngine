@@ -1,5 +1,8 @@
 #include <iostream>
 #include <array>
+#include <chrono>
+#include <cstdint>
+#include <filesystem>
 
 #include <VkBootstrap.h>
 #include <glm/glm.hpp>
@@ -27,6 +30,58 @@
 #include "Core/Managers/CameraManager.h"
 #include "Core/Managers/InputManager.h"
 
+namespace
+{
+std::filesystem::path GetRuntimeDirectory(const char* argv0)
+{
+#if defined(__linux__)
+	std::error_code error;
+	auto executablePath = std::filesystem::read_symlink("/proc/self/exe", error);
+	if (!error)
+		return executablePath.parent_path();
+#endif
+
+	if (argv0 && *argv0)
+		return std::filesystem::absolute(argv0).parent_path();
+
+	return std::filesystem::current_path();
+}
+
+std::filesystem::path FindTexturePath(const std::filesystem::path& runtimeDir)
+{
+	for (const auto& candidate : {
+		     runtimeDir / "assets/AllMight.jpg",
+		     runtimeDir / "assets/AllMight.jpeg",
+		     runtimeDir / "assets/AllMight.png" })
+	{
+		if (std::filesystem::exists(candidate))
+			return candidate;
+	}
+
+	return {};
+}
+
+std::unique_ptr<vde::core::gpu::Image> CreateFallbackTexture(vde::core::GraphicsContext& graphicsContext)
+{
+	constexpr std::array<std::uint8_t, 4 * 4 * 4> pixels = {
+		255, 255, 255, 255,  20,  20,  20, 255, 255, 255, 255, 255,  20,  20,  20, 255,
+		 20,  20,  20, 255, 255, 140,   0, 255,  20,  20,  20, 255, 255, 140,   0, 255,
+		255, 255, 255, 255,  20,  20,  20, 255, 255, 255, 255, 255,  20,  20,  20, 255,
+		 20,  20,  20, 255, 255, 140,   0, 255,  20,  20,  20, 255, 255, 140,   0, 255,
+	};
+
+	return graphicsContext.CreateImage({
+		vde::core::gpu::EImageType::Image2D,
+		{ 4, 4, 1 },
+		{ vde::core::gpu::EImageFormatComponents::RGBA, vde::core::gpu::EImageFormatType::U8_Norm },
+		vde::core::gpu::EImageUsageBits::Sampled,
+		1,
+		1,
+		pixels.data()
+	});
+}
+}
+
 // Géométrie du quad (carré 1x1 centré sur l'origine)
 //   0 (haut gauche)      3 (haut droit)
 //        +------------------+
@@ -52,6 +107,10 @@ std::array<uint32_t, 6> indices = { 0, 1, 2, 0, 2, 3 };
 
 int main(int argc, char** argv)
 {
+	(void)argc;
+
+	const std::filesystem::path runtimeDir = GetRuntimeDirectory(argv[0]);
+
 	// === INITIALISATION ===
 	auto window = std::make_unique<vde::core::Window>(
 		vde::core::WindowDescriptor{ {1600, 900}, "Hello VDE", false }
@@ -65,7 +124,7 @@ int main(int argc, char** argv)
 
 	// Plugins pour charger les formats de fichiers (JPG/PNG, OBJ)
 	vde::util::PluginRegistry::Global().Context().graphicsContext = graphicsContext.get();
-	vde::util::PluginRegistry::Global().LoadAllFromDirectory("engine/plugins");
+	vde::util::PluginRegistry::Global().LoadAllFromDirectory(runtimeDir / "engine" / "plugins");
 
 	vde::imgui::Initialize(*window, *graphicsContext);
 
@@ -89,14 +148,17 @@ int main(int argc, char** argv)
 	ib->Upload(indices);
 
 	AssetsManager::GetInstance().LoadRenderable("Quad", {vb.get(), uvb.get()}, ib.get(), 6);
-	AssetsManager::GetInstance().LoadTexture("AllMight", "assets/AllMight.jpg");
+	if (const auto texturePath = FindTexturePath(runtimeDir); !texturePath.empty())
+		AssetsManager::GetInstance().LoadTexture("AllMight", texturePath.string());
+	else
+		AssetsManager::GetInstance().StoreTexture("AllMight", CreateFallbackTexture(*graphicsContext));
 
 	// === SHADERS ===
 	// Fichiers .spv = SPIR-V (binaire Vulkan compilé avec glslc)
-	vde::core::assets::FileAssetSource vsSrc("shaders/base.vert.spv");
+	vde::core::assets::FileAssetSource vsSrc(runtimeDir / "shaders" / "base.vert.spv");
 	auto vs = graphicsContext->CreateShader({ vsSrc.Data().data(), vsSrc.Data().size() });
 
-	vde::core::assets::FileAssetSource fsSrc("shaders/base.frag.spv");
+	vde::core::assets::FileAssetSource fsSrc(runtimeDir / "shaders" / "base.frag.spv");
 	auto fs = graphicsContext->CreateShader({ fsSrc.Data().data(), fsSrc.Data().size() });
 
 	// === PIPELINE ===

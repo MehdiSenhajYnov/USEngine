@@ -30,17 +30,17 @@ void vde::imgui::Initialize(vde::core::Window& window, vde::core::GraphicsContex
     init_info.DescriptorPool      = context.GetImpl().mainDescriptorPool->GetImpl().pool;
     init_info.MinImageCount       = 2;
     init_info.ImageCount          = 2;
-    init_info.MSAASamples         = VK_SAMPLE_COUNT_1_BIT;
-    init_info.UseDynamicRendering = true;
+	init_info.MSAASamples         = VK_SAMPLE_COUNT_1_BIT;
+	init_info.UseDynamicRendering = true;
 
-    VkFormat backbufferFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
+	VkFormat backbufferFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
+	VkPipelineRenderingCreateInfo pipelineRenderingInfo {};
+	pipelineRenderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+	pipelineRenderingInfo.colorAttachmentCount = 1u;
+	pipelineRenderingInfo.pColorAttachmentFormats = &backbufferFormat;
 
-    init_info.PipelineRenderingCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-        .colorAttachmentCount = 1Ui32,
-        .pColorAttachmentFormats = &backbufferFormat
-    };
-    ImGui_ImplVulkan_Init(&init_info);
+	init_info.PipelineRenderingCreateInfo = pipelineRenderingInfo;
+	ImGui_ImplVulkan_Init(&init_info);
 
     io.Fonts->AddFontDefault();
 

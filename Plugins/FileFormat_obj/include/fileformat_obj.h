@@ -6,7 +6,7 @@
 #include <graphics/mesh.h>
 #include <util/plugin.h>
 
-class __declspec(dllexport) FileFormat_OBJ
+class VDE_PLUGIN_EXPORT FileFormat_OBJ
 	: public vde::util::FileFormatPlugin<vde::graphics::Mesh>
 {
 	vde::core::GraphicsContext* m_graphicsContext;

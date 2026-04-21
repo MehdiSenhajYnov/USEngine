@@ -12,6 +12,14 @@ namespace vde::core
 
 namespace vde::util
 {
+#if defined(_WIN32)
+# define VDE_PLUGIN_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+# define VDE_PLUGIN_EXPORT __attribute__((visibility("default")))
+#else
+# define VDE_PLUGIN_EXPORT
+#endif
+
 	enum class EPluginFamily
 	{
 		FileFormat = 0,
@@ -27,6 +35,7 @@ namespace vde::util
 	class PluginBase
 	{
 	public:
+		virtual ~PluginBase() noexcept = default;
 		virtual EPluginFamily Family() const = 0;
 	};
 

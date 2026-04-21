@@ -2,8 +2,10 @@
 #define VDE__CORE__ASSETS__ASSETSOURCE_H
 #pragma once
 
+#include <cstddef>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace vde::core::assets
 {

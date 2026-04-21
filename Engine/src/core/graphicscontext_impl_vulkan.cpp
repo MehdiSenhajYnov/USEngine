@@ -32,11 +32,11 @@ void GraphicsContext::Impl::SubmitInternal(
 	const std::vector<std::pair<VkPipelineStageFlagBits2, VkSemaphore>>& signalInfo,
 	VkFence fence /* = VK_NULL_HANDLE */)
 {
-	std::vector<VkSemaphoreSubmitInfo> waitSemaphores(waitInfo.size(), {});
+	std::vector<VkSemaphoreSubmitInfo> waitSemaphores(waitInfo.size());
 	for (size_t i = 0; i < waitSemaphores.size(); ++i)
 		waitSemaphores[i] = gpu_detail::semaphore_submit_info(std::get<0>(waitInfo[i]), std::get<1>(waitInfo[i]));
 
-	std::vector<VkSemaphoreSubmitInfo> signalSemaphores(signalInfo.size(), {});
+	std::vector<VkSemaphoreSubmitInfo> signalSemaphores(signalInfo.size());
 	for (size_t i = 0; i < signalSemaphores.size(); ++i)
 		signalSemaphores[i] = gpu_detail::semaphore_submit_info(std::get<0>(signalInfo[i]), std::get<1>(signalInfo[i]));
 

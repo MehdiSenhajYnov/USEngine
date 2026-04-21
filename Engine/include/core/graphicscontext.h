@@ -2,8 +2,10 @@
 #define VDE__CORE__GRAPHICSCONTEXT_H
 #pragma once
 
+#include <array>
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include <core/gpu/buffer.h>
 #include <core/gpu/image.h>

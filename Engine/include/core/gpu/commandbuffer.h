@@ -4,6 +4,7 @@
 
 
 #include <memory>
+#include <string>
 #include <vector>
 #include <core/gpu/enums.h>
 #include <core/gpu/shader.h>

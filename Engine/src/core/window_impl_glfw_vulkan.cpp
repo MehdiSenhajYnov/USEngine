@@ -1,20 +1,9 @@
 #define GLFW_INCLUDE_VULKAN
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 
 #include "window_impl_glfw_vulkan.h"
-#include <vulkan/vulkan.h>
 
-#ifndef NDEBUG
-# pragma comment(lib, "VkBootstrap-d.lib")
-# pragma comment(lib, "glfw3-s-d.lib")
-#else // !NDEBUG
-# pragma comment(lib, "VkBootstrap.lib")
-# pragma comment(lib, "glfw3-s.lib")
-#endif // !NDEBUG
-
-#pragma comment(lib, "vulkan-1.lib")
+#include <stdexcept>
 
 using namespace vde::core;
 
@@ -22,19 +11,34 @@ Window::Window(const WindowDescriptor& desc)
 	: m_pImpl(new Impl)
 	, m_desc(desc)
 {
-	m_pImpl->instance = vkb::InstanceBuilder{}.set_app_name(desc.title.c_str())
-	                                          .set_engine_name("LNX VDE")
-	                                          .request_validation_layers()
-	                                          .enable_extension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)
-	                                          .use_default_debug_messenger()
-		                                      .require_api_version(1, 3, 0)
-	                                          .build().value();
+	if (glfwInit() != GLFW_TRUE)
+		throw std::runtime_error("GLFW initialization failed.");
 
-	glfwInit();
+	uint32_t glfwExtensionCount = 0;
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	if (!glfwExtensions || glfwExtensionCount == 0)
+		throw std::runtime_error("GLFW did not report any required Vulkan instance extensions.");
+
+	auto instanceBuilder = vkb::InstanceBuilder{}.set_app_name(desc.title.c_str())
+	                                             .set_engine_name("LNX VDE")
+	                                             .request_validation_layers()
+	                                             .enable_extension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)
+	                                             .use_default_debug_messenger()
+	                                             .require_api_version(1, 3, 0);
+
+	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+		instanceBuilder.enable_extension(glfwExtensions[i]);
+
+	m_pImpl->instance = instanceBuilder.build().value();
+
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	m_pImpl->window = glfwCreateWindow(desc.size.x, desc.size.y, desc.title.c_str(), nullptr, nullptr);
-	glfwCreateWindowSurface(m_pImpl->instance, m_pImpl->window, nullptr, &m_pImpl->surface);
+	if (!m_pImpl->window)
+		throw std::runtime_error("GLFW window creation failed.");
+
+	if (glfwCreateWindowSurface(m_pImpl->instance, m_pImpl->window, nullptr, &m_pImpl->surface) != VK_SUCCESS)
+		throw std::runtime_error("GLFW Vulkan surface creation failed.");
 
 	VkPhysicalDeviceFeatures features {};
 	features.samplerAnisotropy = true;

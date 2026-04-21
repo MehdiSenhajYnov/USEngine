@@ -28,6 +28,9 @@ public:
 	bool GetTexture(std::string TextureName, vde::core::assets::Asset<vde::core::gpu::Image>*& OutTexture);
 	vde::core::assets::Asset<vde::core::gpu::Image>* LoadTexture(const std::string& TextureName,
 	                                                              const std::string& TexturePath);
+	vde::core::assets::Asset<vde::core::gpu::Image>* StoreTexture(
+		const std::string& TextureName,
+		std::unique_ptr<vde::core::gpu::Image> Texture);
 
 private:
 	std::map<std::string, Renderable> LoadedRenderables;
