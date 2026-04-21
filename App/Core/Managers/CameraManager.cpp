@@ -15,7 +15,7 @@ void CameraManager::Update(float dt)
 	if (MainCamera->IsMovable())
 	{
 		glm::vec3 rot = transform->GetLocalRotation();
-		rot.x += mouse.x * mouseSensitivity;
+		rot.x -= mouse.x * mouseSensitivity;
 		rot.y += -mouse.y * mouseSensitivity;
 		rot.y = glm::clamp(rot.y, -89.0f, 89.0f);
 		transform->SetRotation(rot);
@@ -29,7 +29,7 @@ void CameraManager::Update(float dt)
 		forward.z = cosf(pitch) * cosf(yaw);
 		forward = glm::normalize(forward);
 
-		glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), forward));
+		glm::vec3 right = glm::normalize(glm::cross(forward, glm::vec3(0, 1, 0)));
 
 		// D�placement dans la direction du regard (forward complet avec Y)
 		glm::vec3 move(0.0f);

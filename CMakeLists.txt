@@ -291,13 +291,16 @@ set_target_properties(vde_fileformat_stbimage PROPERTIES OUTPUT_NAME "FileFormat
 
 add_executable(vde_app
     App/main.cpp
+    App/Examples/MessageBusExamples.cpp
     App/Core/BaseObject.cpp
     App/Core/Components/CameraComponent.cpp
     App/Core/Components/Component.cpp
+    App/Core/Components/Render/MeshRenderComponent.cpp
     App/Core/Components/Render/RenderComponent.cpp
     App/Core/Components/TransformComponent.cpp
     App/Core/GameObjects/CameraObject.cpp
     App/Core/GameObjects/GameObject.cpp
+    App/Core/GameObjects/MeshRendererObject.cpp
     App/Core/GameObjects/RendererObject.cpp
     App/Core/Input/KeyEnum.cpp
     App/Core/Input/WindowHandler.cpp

@@ -2,13 +2,12 @@
 
 void AssetsManager::Reset()
 {
-	for (auto& [Name, Texture] : LoadedTextures)
-	{
-		Texture.reset();
-	}
+	LoadedRenderables.clear();
+	LoadedTextures.clear();
+	LoadedMeshes.clear();
 }
 
-bool AssetsManager::GetRenderable(std::string RenderableName, Renderable& OutRenderable)
+bool AssetsManager::GetRenderable(const std::string& RenderableName, Renderable& OutRenderable)
 {
 	if (LoadedRenderables.contains(RenderableName))
 	{
@@ -18,7 +17,7 @@ bool AssetsManager::GetRenderable(std::string RenderableName, Renderable& OutRen
 	return false;
 }
 
-void AssetsManager::LoadRenderable(std::string RenderableName, const Renderable& RenderableToUse)
+void AssetsManager::LoadRenderable(const std::string& RenderableName, const Renderable& RenderableToUse)
 {
 	LoadedRenderables[RenderableName] = {
 		RenderableToUse.AllVertexBuffers,
@@ -27,7 +26,7 @@ void AssetsManager::LoadRenderable(std::string RenderableName, const Renderable&
 	};
 }
 
-void AssetsManager::LoadRenderable(std::string RenderableName,
+void AssetsManager::LoadRenderable(const std::string& RenderableName,
                                    USList<vde::core::gpu::Buffer*> AllVertexBuffers,
                                    vde::core::gpu::Buffer* IndexBuffer,
                                    int IndexCount)
@@ -35,7 +34,7 @@ void AssetsManager::LoadRenderable(std::string RenderableName,
 	LoadedRenderables[RenderableName] = {AllVertexBuffers, IndexBuffer, IndexCount};
 }
 
-bool AssetsManager::GetTexture(std::string TextureName,
+bool AssetsManager::GetTexture(const std::string& TextureName,
                                vde::core::assets::Asset<vde::core::gpu::Image>*& OutTexture)
 {
 	if (LoadedTextures.contains(TextureName))
@@ -69,4 +68,30 @@ vde::core::assets::Asset<vde::core::gpu::Image>* AssetsManager::StoreTexture(
 
 	LoadedTextures[TextureName] = std::make_unique<ImageAsset>(std::move(Texture));
 	return LoadedTextures[TextureName].get();
+}
+
+bool AssetsManager::GetMesh(const std::string& MeshName,
+                            vde::core::assets::Asset<vde::graphics::Mesh>*& OutMesh)
+{
+	if (LoadedMeshes.contains(MeshName))
+	{
+		OutMesh = LoadedMeshes[MeshName].get();
+		return true;
+	}
+	return false;
+}
+
+vde::core::assets::Asset<vde::graphics::Mesh>* AssetsManager::LoadMesh(
+	const std::string& MeshName,
+	const std::string& MeshPath)
+{
+	using namespace vde::core::assets;
+	using MeshAsset = Asset<vde::graphics::Mesh>;
+
+	auto Mesh = std::make_unique<MeshAsset>(
+		std::make_unique<FileAssetSource>(MeshPath)
+	);
+
+	LoadedMeshes[MeshName] = std::move(Mesh);
+	return LoadedMeshes[MeshName].get();
 }

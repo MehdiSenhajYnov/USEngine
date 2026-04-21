@@ -6,6 +6,7 @@
 
 #include <VkBootstrap.h>
 #include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <core/window.h>
@@ -20,6 +21,7 @@
 
 #include "OptRef.h"
 #include "Core/Components/TransformComponent.h"
+#include "Core/Components/Render/MeshRenderComponent.h"
 #include "Core/Components/Render/RenderComponent.h"
 #include "Core/GameObjects/RendererObject.h"
 #include "Core/Managers/AssetsManager.h"
@@ -47,39 +49,6 @@ std::filesystem::path GetRuntimeDirectory(const char* argv0)
 	return std::filesystem::current_path();
 }
 
-std::filesystem::path FindTexturePath(const std::filesystem::path& runtimeDir)
-{
-	for (const auto& candidate : {
-		     runtimeDir / "assets/AllMight.jpg",
-		     runtimeDir / "assets/AllMight.jpeg",
-		     runtimeDir / "assets/AllMight.png" })
-	{
-		if (std::filesystem::exists(candidate))
-			return candidate;
-	}
-
-	return {};
-}
-
-std::unique_ptr<vde::core::gpu::Image> CreateFallbackTexture(vde::core::GraphicsContext& graphicsContext)
-{
-	constexpr std::array<std::uint8_t, 4 * 4 * 4> pixels = {
-		255, 255, 255, 255,  20,  20,  20, 255, 255, 255, 255, 255,  20,  20,  20, 255,
-		 20,  20,  20, 255, 255, 140,   0, 255,  20,  20,  20, 255, 255, 140,   0, 255,
-		255, 255, 255, 255,  20,  20,  20, 255, 255, 255, 255, 255,  20,  20,  20, 255,
-		 20,  20,  20, 255, 255, 140,   0, 255,  20,  20,  20, 255, 255, 140,   0, 255,
-	};
-
-	return graphicsContext.CreateImage({
-		vde::core::gpu::EImageType::Image2D,
-		{ 4, 4, 1 },
-		{ vde::core::gpu::EImageFormatComponents::RGBA, vde::core::gpu::EImageFormatType::U8_Norm },
-		vde::core::gpu::EImageUsageBits::Sampled,
-		1,
-		1,
-		pixels.data()
-	});
-}
 }
 
 // Géométrie du quad (carré 1x1 centré sur l'origine)
@@ -148,10 +117,11 @@ int main(int argc, char** argv)
 	ib->Upload(indices);
 
 	AssetsManager::GetInstance().LoadRenderable("Quad", {vb.get(), uvb.get()}, ib.get(), 6);
-	if (const auto texturePath = FindTexturePath(runtimeDir); !texturePath.empty())
-		AssetsManager::GetInstance().LoadTexture("AllMight", texturePath.string());
-	else
-		AssetsManager::GetInstance().StoreTexture("AllMight", CreateFallbackTexture(*graphicsContext));
+
+	AssetsManager::GetInstance().LoadTexture("AllMight", "assets/AllMight.jpg");
+	AssetsManager::GetInstance().LoadTexture("blank", "assets/blank.png");
+	AssetsManager::GetInstance().LoadMesh("monkey", "assets/monkey.obj");
+	AssetsManager::GetInstance().LoadMesh("torus", "assets/torus.obj");
 
 	// === SHADERS ===
 	// Fichiers .spv = SPIR-V (binaire Vulkan compilé avec glslc)
@@ -165,7 +135,8 @@ int main(int argc, char** argv)
 	// Vertex Shader → Rasterization → Fragment Shader → Backbuffer
 	auto pipeline = graphicsContext->CreatePipeline(vde::core::gpu::Pipeline::GraphicsPipelineInfo{
 		{ vs.get(), fs.get() },
-		{ &graphicsContext->Backbuffer() }
+		{ &graphicsContext->Backbuffer() },
+		&graphicsContext->BackbufferDepth()
 	});
 
 	OptRef<USGameObject> temp;
@@ -178,12 +149,15 @@ int main(int argc, char** argv)
 	//                |
 	//              [GO4]           (y = -1)
 	USScene Scene;
-	USRendererObject* GameObject1 = Scene.CreateGameObject<USRendererObject>();
+	USGameObject* GameObject1 = Scene.CreateGameObject<USGameObject>();
 	USRendererObject* GameObject2 = Scene.CreateGameObject<USRendererObject>();
 	USRendererObject* GameObject3 = Scene.CreateGameObject<USRendererObject>();
 	USRendererObject* GameObject4 = Scene.CreateGameObject<USRendererObject>();
 
-	GameObject1->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
+	USMeshRenderComponent& Mesh = GameObject1->AddComponent<USMeshRenderComponent>();
+
+	Mesh.Init(graphicsContext.get(), "monkey", "AllMight", pipeline.get());
+
 	GameObject2->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject3->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
 	GameObject4->RenderComponent->Init(graphicsContext.get(), "Quad", "AllMight", pipeline.get());
@@ -207,9 +181,7 @@ int main(int argc, char** argv)
 	// === CAMERA ===
 	// Push constants = données rapides envoyées au shader (view/projection partagées)
 	vde::core::gpu::ShaderDataStore cameraDataStore(vs->PushConstants());
-	cameraDataStore["projection"] = glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
-
-	float t = 0.0f;
+	cameraDataStore["projection"] = glm::perspectiveRH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
 
 	using Clock = std::chrono::high_resolution_clock;
 	auto lastTime = Clock::now();
@@ -270,12 +242,13 @@ int main(int argc, char** argv)
 			"Triangle", vde::core::gpu::ECommandBufferRecordType::OneTimeSubmit); encoder)
 		{
 			encoder->ClearImageColor(graphicsContext->Backbuffer(), { 0.1f, 0.2f, 0.3f, 1.0f });
+			encoder->ClearImageDepthStencil(graphicsContext->BackbufferDepth(), 1.0f);
 
 			// Passe de rendu
 			if (auto rendering = encoder->BeginRendering(
 				*pipeline,
 				{ &graphicsContext->Backbuffer() },
-				nullptr); rendering)
+				&graphicsContext->BackbufferDepth()); rendering)
 			{
 				// Push constants view/projection (partagées par tous les objets)
 				rendering->UpdatePushConstants(vde::core::gpu::EShaderStage::Vertex, cameraDataStore);

@@ -23,7 +23,10 @@ void USRenderComponent::Init(vde::core::GraphicsContext* GraphicsContextToUse, s
 {
 	DrawableName = DrawableNameToUse;
 	TextureName = TextureNameToUse;
-	AssetsManager::GetInstance().GetTexture(TextureName, Texture);
+	if (!AssetsManager::GetInstance().GetTexture(TextureName, Texture))
+	{
+		throw std::runtime_error("USRenderComponent::Init: Texture " + TextureName + " not found in AssetsManager.");
+	}
 	Load(Pipeline, GraphicsContextToUse);
 }
 
@@ -93,12 +96,10 @@ void USRenderComponent::Reset()
 	// Principe de RAII : Last In, First Out (LIFO)
 	// Les ressources qui dépendent d'autres doivent être détruites en premier
 
-	// --- Uniform Buffers des matrices modèle ---
-	// Ces buffers sont référencés par les descriptor sets, donc on les détruit après
-	ModelBuffer.reset();
 	// Doivent être détruits avant les ressources qu'ils référencent
 	DescriptorSet.reset();
 	DescriptorSetModel.reset();
+	ModelBuffer.reset();
 }
 
 void USRenderComponent::Tick(float deltaTime)

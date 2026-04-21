@@ -35,7 +35,7 @@ glm::mat4 USCameraComponent::GetViewMatrix() const
 // Projection perspective compatible Vulkan 
 glm::mat4 USCameraComponent::GetProjectionMatrix(float aspect) const
 {
-	return glm::perspective(glm::radians(fovDeg), aspect, nearPlane, farPlane);
+	return glm::perspectiveRH_ZO(glm::radians(fovDeg), aspect, nearPlane, farPlane);
 }
 
 bool USCameraComponent::IsMovable() const { return isMovable; }

@@ -228,9 +228,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Core\BaseObject.cpp" />
     <ClCompile Include="Core\Components\Component.cpp" />
+    <ClCompile Include="Core\Components\Render\MeshRenderComponent.cpp" />
     <ClCompile Include="Core\Components\Render\RenderComponent.cpp" />
     <ClCompile Include="Core\Components\TransformComponent.cpp" />
     <ClCompile Include="Core\GameObjects\GameObject.cpp" />
+    <ClCompile Include="Core\GameObjects\MeshRendererObject.cpp" />
     <ClCompile Include="Core\GameObjects\RendererObject.cpp" />
     <ClCompile Include="Core\List.cpp" />
     <ClCompile Include="Core\Managers\AssetsManager.cpp" />
@@ -243,10 +245,12 @@
     <ClInclude Include="Core\Components\CameraComponent.h" />
     <ClInclude Include="Core\Components\Component.h" />
     <ClInclude Include="Core\Components\Render\Renderable.h" />
+    <ClInclude Include="Core\Components\Render\MeshRenderComponent.h" />
     <ClInclude Include="Core\Components\Render\RenderComponent.h" />
     <ClInclude Include="Core\Components\TransformComponent.h" />
     <ClInclude Include="Core\GameObjects\CameraObject.h" />
     <ClInclude Include="Core\GameObjects\GameObject.h" />
+    <ClInclude Include="Core\GameObjects\MeshRendererObject.h" />
     <ClInclude Include="Core\GameObjects\RendererObject.h" />
     <ClInclude Include="Core\Input\KeyEnum.h" />
     <ClInclude Include="Core\Input\WindowHandler.h" />
