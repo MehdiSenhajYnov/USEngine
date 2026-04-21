@@ -31,12 +31,12 @@ void CameraManager::Update(float dt)
 
 		glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), forward));
 
-		// Déplacement dans la direction du regard (forward complet avec Y)
+		// Dï¿½placement dans la direction du regard (forward complet avec Y)
 		glm::vec3 move(0.0f);
-		if (input.IsKeyDown(GLFW_KEY_Z) || input.IsKeyDown(GLFW_KEY_W)) move += forward;
-		if (input.IsKeyDown(GLFW_KEY_S)) move -= forward;
-		if (input.IsKeyDown(GLFW_KEY_Q) || input.IsKeyDown(GLFW_KEY_A)) move -= right;
-		if (input.IsKeyDown(GLFW_KEY_D)) move += right;
+		if (input.IsKeyDown(Key::Z) || input.IsKeyDown(Key::W)) move += moveForward;
+		if (input.IsKeyDown(Key::S)) move -= moveForward;
+		if (input.IsKeyDown(Key::Q) || input.IsKeyDown(Key::A)) move -= right;
+		if (input.IsKeyDown(Key::D)) move += right;
 
 		if (glm::length2(move) > 0.0f)
 		{

@@ -2,13 +2,17 @@
 
 #include <GLFW/glfw3.h>
 #include <core/window.h>
+#include "../Input/WindowHandler.h"
 
-
-void InputManager::Initialize(vde::core::Window& window)
+// Windows implementation
+struct GLFWwindow;
+namespace vde::core { class Window; }
+ 
+void InputManager::Initialize(WindowHandler* WindowHandleStruct)
 {
-	windowHandle = window.GetGLFWWindow();
+	windowHandle = WindowHandleStruct;
 	// Optional: lock the cursor for FPS camera
-	glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(windowHandle->Handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void InputManager::Update()
@@ -16,7 +20,7 @@ void InputManager::Update()
 	if (!windowHandle) return;
 
 	double x, y;
-	glfwGetCursorPos(windowHandle, &x, &y);
+	glfwGetCursorPos(windowHandle->Handle, &x, &y);
 
 	if (firstMouse)
 	{
@@ -32,10 +36,10 @@ void InputManager::Update()
 	lastY = y;
 }
 
-bool InputManager::IsKeyDown(int key) const
+bool InputManager::IsKeyDown(Key key) const
 {
 	if (!windowHandle) return false;
-	return glfwGetKey(windowHandle, key) == GLFW_PRESS;
+	return glfwGetKey(windowHandle->Handle, static_cast<int>(key)) == GLFW_PRESS;
 }
 
 glm::vec2 InputManager::ConsumeMouseDelta()

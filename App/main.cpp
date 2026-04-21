@@ -23,6 +23,7 @@
 #include "Core/Scene/Scene.h"
 
 #include "Core/GameObjects/CameraObject.h"
+#include "Core/Input/WindowHandler.h"
 #include "Core/Managers/CameraManager.h"
 #include "Core/Managers/InputManager.h"
 
@@ -56,7 +57,8 @@ int main(int argc, char** argv)
 		vde::core::WindowDescriptor{ {1600, 900}, "Hello VDE", false }
 	);
 
-	InputManager::GetInstance().Initialize(*window);
+	WindowHandler windowHandle(*window);
+	InputManager::GetInstance().Initialize(&windowHandle);
 
 	// Contexte Vulkan (instance, device, swapchain, command pools)
 	auto graphicsContext = std::make_shared<vde::core::GraphicsContext>(*window);
@@ -167,14 +169,14 @@ int main(int argc, char** argv)
 		lastTime = now;
 
 		InputManager::GetInstance().Update();
-		if (InputManager::GetInstance().IsKeyDown(GLFW_KEY_ESCAPE))
+		if (InputManager::GetInstance().IsKeyDown(Key::Escape))
 		{
 			window->RaiseShouldClose();
 		}
 		CameraManager::GetInstance().Update(deltaTime);
 
 		// === Switch Caméra ===
-		bool cDown = InputManager::GetInstance().IsKeyDown(GLFW_KEY_C);
+		bool cDown = InputManager::GetInstance().IsKeyDown(Key::C);
 		if (cDown && !cWasDown)
 		{
 			useCam1 = !useCam1;
@@ -196,7 +198,7 @@ int main(int argc, char** argv)
 
 		}
 
-
+		// Renderer jobs
 
 		// Acquisition d'un command buffer pour enregistrer les commandes GPU
 		auto& cmdBuffer = graphicsContext->CommandPool().Acquire();
@@ -217,8 +219,7 @@ int main(int argc, char** argv)
 				rendering->UpdatePushConstants(vde::core::gpu::EShaderStage::Vertex, cameraDataStore);
 				rendering->SetViewport({ 0, 0 }, { graphicsContext->Backbuffer().Size() });
 
-				// TODO: remplacer 1/60 par le vrai deltaTime
-				Scene.Tick(1/60);
+				Scene.Tick(deltaTime);
 				Scene.Draw(*rendering);
 			}
 		}
